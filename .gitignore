@@ -25,3 +25,4 @@
 /gitflow
 /target
 /gradle/wrapper/gradle-wrapper.jar
+/out
