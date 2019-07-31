@@ -32,7 +32,7 @@ public class ProcessFunctionDemo {
 
 	private static class MyFlat extends ProcessFunction<String,Tuple2<String, Long>> {
 		@Override
-		public void processElement(String value, Context ctx, Collector<Tuple2<String, Long>> out) throws Exception {
+		public void processElement(String value, Context ctx, Collector<Tuple2<String, Long>> out) {
 			if(value != null && value.length() > 0) {
 				final char[] chars = value.toCharArray();
 				int wordStart = 0;
@@ -51,7 +51,7 @@ public class ProcessFunctionDemo {
 						strType = cType;
 					} else if(strType != cType) {
 						if(strType != 1) {
-							final String s = new String(Arrays.copyOfRange(chars, wordStart, i));
+							final String s = String.valueOf(Arrays.copyOfRange(chars, wordStart, i));
 							out.collect(Tuple2.of(s,1L));
 						}
 						wordStart = i;
@@ -59,7 +59,7 @@ public class ProcessFunctionDemo {
 					}
 				}
 				if(wordStart < chars.length) {
-					final String s = new String(Arrays.copyOfRange(chars, wordStart, chars.length));
+					final String s = String.valueOf(Arrays.copyOfRange(chars, wordStart, chars.length));
 					out.collect(Tuple2.of(s,1L));
 				}
 			}
@@ -67,9 +67,9 @@ public class ProcessFunctionDemo {
 	}
 
 	private static class Kpf extends KeyedProcessFunction<Tuple,Tuple2<String, Long>,Tuple2<String, Long>> {
-		private ValueState<Tuple2<String, Long>> state;
+		private transient ValueState<Tuple2<String, Long>> state;
 		@Override
-		public void open(Configuration parameters) throws Exception {
+		public void open(Configuration parameters) {
 			state = getRuntimeContext().getState(new ValueStateDescriptor<>("myState",Types.TUPLE(Types.STRING, Types.INT)));
 		}
 
