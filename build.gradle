@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+    id 'java-library'
+}
+
+group 'org.huang.flink'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    maven { url vipShopMavenCentral }
+}
+
+dependencies {
+    api 'mysql:mysql-connector-java:8.0.15'
+    implementation 'org.apache.flink:flink-jdbc_2.12:1.7.2'
+    implementation 'org.apache.flink:flink-core:1.7.2'
+    implementation 'org.apache.flink:flink-streaming-java_2.12:1.7.2'
+    testImplementation 'junit:junit:4.12'
+}
