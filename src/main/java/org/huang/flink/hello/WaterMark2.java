@@ -79,6 +79,7 @@ public class WaterMark2 {
 				queue.offer(Tuple3.of("hello", baseTime + 12000,"18-12"));
 				Thread.sleep(3000);
 				System.out.println("推送延期数据2: " + rebaseTime(System.currentTimeMillis()));
+				//这个数据丢失了，因为超出水印时间超过5秒
 				queue.offer(Tuple3.of("hello", baseTime + 5000,"21-5"));
 			} catch (Exception e) {
 				e.printStackTrace();
