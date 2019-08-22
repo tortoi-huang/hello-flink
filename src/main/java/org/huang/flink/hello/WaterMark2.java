@@ -18,6 +18,9 @@ import javax.annotation.Nullable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * 学习和了解底层api操作
+ */
 public class WaterMark2 {
 	private static final BlockingQueue<Tuple3<String, Long,String>> queue = new LinkedBlockingQueue<>();
 	private static volatile long baseTime = 0;
