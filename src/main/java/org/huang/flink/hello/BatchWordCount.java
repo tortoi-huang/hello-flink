@@ -22,7 +22,7 @@ public class BatchWordCount {
 		DataSet<String> text;
 		// get default test text data
 		System.out.println("Executing WordCount example with default input data set.");
-		System.out.println("Use --input to specify file input.");
+		System.out.println("Use --input to specify file1 input.");
 		text = WordCountData.getDefaultTextLineDataSet(env);
 
 		DataSet<Tuple2<String, Integer>> counts =

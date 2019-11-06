@@ -24,7 +24,7 @@ public class WaterMark {
 		try {
 			final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 			env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-			env.setStateBackend((StateBackend)new FsStateBackend("file:///study/flink/data/checkpoints"));
+			env.setStateBackend((StateBackend)new FsStateBackend("file1:///study/flink/data/checkpoints"));
 			DataStream<Tuple2<String, Long>> text = env.addSource(new MySourceFunction())
 					.assignTimestampsAndWatermarks(new TimestampExtractor())
 					;
