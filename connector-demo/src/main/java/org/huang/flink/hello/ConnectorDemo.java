@@ -2,7 +2,6 @@ package org.huang.flink.hello;
 
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.java.BatchTableEnvironment;
 import org.apache.flink.table.descriptors.FileSystem;
 import org.apache.flink.table.descriptors.OldCsv;
