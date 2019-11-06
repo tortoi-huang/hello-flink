@@ -1,6 +1,6 @@
 
 dependencies {
     implementation "org.apache.flink:flink-table-api-java:${flinkVersion}"
-    implementation "org.apache.flink:flink-table-api-java-bridge_2.12:${flinkVersion}"
-    implementation "org.apache.flink:flink-table-planner_2.12:${flinkVersion}"
+    implementation "org.apache.flink:flink-table-api-java-bridge_${sparkVersion}:${flinkVersion}"
+    implementation "org.apache.flink:flink-table-planner_${sparkVersion}:${flinkVersion}"
 }

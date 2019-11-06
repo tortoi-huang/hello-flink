@@ -1,6 +1,6 @@
 
 dependencies {
-    implementation "org.apache.flink:flink-streaming-java_2.12:${flinkVersion}"
+    implementation "org.apache.flink:flink-streaming-java_${sparkVersion}:${flinkVersion}"
     api 'mysql:mysql-connector-java:8.0.15'
-    implementation "org.apache.flink:flink-jdbc_2.12:${flinkVersion}"
+    implementation "org.apache.flink:flink-jdbc_${sparkVersion}:${flinkVersion}"
 }
