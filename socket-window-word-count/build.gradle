@@ -1,0 +1,4 @@
+
+dependencies {
+    implementation "org.apache.flink:flink-streaming-java_2.12:${flinkVersion}"
+}

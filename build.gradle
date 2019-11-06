@@ -3,24 +3,27 @@ plugins {
     id 'java-library'
 }
 
-group 'org.huang.flink'
-version '1.0-SNAPSHOT'
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'java-library'
 
-sourceCompatibility = 1.8
+    group 'org.huang.flink'
+    version '1.0.0-SNAPSHOT'
 
-repositories {
-    maven { url vipShopMavenCentral }
-}
+    sourceCompatibility = 1.8
 
-dependencies {
-    api 'mysql:mysql-connector-java:8.0.15'
-    implementation 'org.apache.flink:flink-jdbc_2.12:1.8.1'
-    implementation 'org.apache.flink:flink-core:1.8.1'
-    implementation 'org.apache.flink:flink-streaming-java_2.12:1.8.1'
-    implementation 'org.apache.flink:flink-scala_2.12:1.8.1'
-    //implementation 'org.apache.flink:flink-table:1.8.1'
-    implementation 'org.apache.flink:flink-table-api-java:1.8.1'
-    implementation 'org.apache.flink:flink-table-api-java-bridge_2.12:1.8.1'
-    implementation 'org.apache.flink:flink-table-planner_2.12:1.8.1'
-    testImplementation 'junit:junit:4.12'
+    repositories {
+        mavenCentral()
+    }
+
+    ext{
+        flinkVersion = "1.8.1"
+    }
+
+    dependencies {
+        implementation "org.apache.flink:flink-core:${flinkVersion}"
+        implementation "org.apache.flink:flink-java:${flinkVersion}"
+        implementation "org.apache.flink:flink-scala_2.12:${flinkVersion}"
+        testImplementation 'junit:junit:4.12'
+    }
 }

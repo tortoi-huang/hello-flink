@@ -1,2 +1,13 @@
 rootProject.name = 'hello-flink'
+include 'batch-table'
+include 'share-lib'
+include 'water-mark2'
+include 'water-mark'
+include 'sokect-source'
+include 'socket-window-word-count'
+include 'program-demo'
+include 'process-function-demo'
+include 'mysql-report'
+include 'connector-demo'
+include 'batch-word-count'
 
