@@ -1,4 +1,11 @@
-
+ext{
+    flinkVersion = "1.17.0"
+    sparkVersion = "2.12"
+}
 dependencies {
-    implementation "org.apache.flink:flink-streaming-java_${sparkVersion}:${flinkVersion}"
+    implementation "org.apache.flink:flink-core:${flinkVersion}"
+    implementation "org.apache.flink:flink-java:${flinkVersion}"
+    //implementation "org.apache.flink:flink-scala_${sparkVersion}:${flinkVersion}"
+    implementation "org.apache.flink:flink-clients:${flinkVersion}"
+    implementation "org.apache.flink:flink-streaming-java:${flinkVersion}"
 }

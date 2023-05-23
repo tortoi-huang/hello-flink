@@ -1,4 +1,12 @@
 
+ext{
+    flinkVersion = "1.17.0"
+    sparkVersion = "2.12"
+}
+
 dependencies {
-    implementation project(':share-lib')
+    implementation "org.apache.flink:flink-core:${flinkVersion}"
+    implementation "org.apache.flink:flink-java:${flinkVersion}"
+    implementation "org.apache.flink:flink-scala_${sparkVersion}:${flinkVersion}"
+    implementation "org.apache.flink:flink-clients:${flinkVersion}"
 }

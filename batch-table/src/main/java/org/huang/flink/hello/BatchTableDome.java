@@ -23,9 +23,7 @@ public class BatchTableDome {
 				.field("order_no",stringType)
 				.field("cust_order_no",stringType)
 				.field("status",TypeInformation.of(Byte.class))
-				.field("time1",stringType)
-				.field("time2",stringType)
-				.field("time3",stringType);
+				.field("time1",stringType);
 		BatchTableEnvironment environment = BatchTableEnvironment.create(env);
 		environment.registerTableSource("orders",builder.build());
 
