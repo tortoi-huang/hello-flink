@@ -3,6 +3,22 @@ plugins {
     id 'java-library'
 }
 
+allprojects {
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Test).configureEach {
+        systemProperty 'file.encoding', 'UTF-8'
+    }
+
+    tasks.withType(JavaExec).tap {
+        configureEach {
+            systemProperty 'file.encoding', 'UTF-8'
+        }
+    }
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'java-library'
@@ -13,6 +29,13 @@ subprojects {
     sourceCompatibility = 1.8
 
     repositories {
+        mavenLocal()
+        maven {
+            url 'https://maven.aliyun.com/repository/public/'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/central'
+        }
         mavenCentral()
     }
 
