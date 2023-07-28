@@ -11,4 +11,6 @@ include 'mysql-report'
 include 'connector-demo'
 include 'batch-word-count'
 include 'mix-demo'
+include 'graph'
+include 'connetct'
 

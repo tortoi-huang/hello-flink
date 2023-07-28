@@ -38,4 +38,3 @@ build/
 /*/build
 !/*/*/bin
 /*/bin
-/gradle/wrapper/gradle-wrapper.jar
