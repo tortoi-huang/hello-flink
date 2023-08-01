@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 public class Graph {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        //StreamExecutionEnvironment env = StreamExecutionEnvironment.createRemoteEnvironment("127.0.0.1",8081);
         //StreamExecutionEnvironment env = StreamExecutionEnvironment.createRemoteEnvironment("127.0.0.1",8081, "D:\\study\\flink\\hello-flink\\graph\\build\\libs\\graph-1.0.0-SNAPSHOT.jar");
 
         //TODO source不会往env添加Transformation，流执行的时候如何调用source function？ 已知生成stream graph 时执行StreamGraphGenerator.transform转换下列第一个算子时计算出来
