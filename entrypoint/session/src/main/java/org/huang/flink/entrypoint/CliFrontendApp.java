@@ -27,13 +27,15 @@ public class CliFrontendApp {
 
     static void fn1() {
         try {
-            final String configDir = "entrypoint/session/src/main/resources/conf";
             final String jar = "entrypoint/appdemo/build/libs/appdemo-1.0.0-SNAPSHOT.jar";
             URI jarUri = Paths.get(jar).toUri();
-            //final Configuration configuration = GlobalConfiguration.loadConfiguration(configDir);
-            final Configuration configuration = GlobalConfiguration.loadConfiguration(configDir,null);
 
-            //本地执行
+            // 本地执行
+//            final Configuration configuration = new Configuration();
+//            configuration.set(DeploymentOptions.TARGET, "local");
+            // 远程执行
+            final String configDir = "entrypoint/session/src/main/resources/conf";
+            final Configuration configuration = GlobalConfiguration.loadConfiguration(configDir);
             configuration.set(DeploymentOptions.TARGET, "remote");
             // TODO 不太明白这个参数
             configuration.set(DeploymentOptions.ATTACHED, true);
@@ -58,9 +60,5 @@ public class CliFrontendApp {
         } catch (Exception e) {
             LOG.error("main: ", e);
         }
-    }
-
-    static void fn2() {
-        CliFrontend.main(new String[]{"run", "entrypoint/appdemo/build/libs/appdemo-1.0.0-SNAPSHOT.jar","--configDir", "entrypoint/session/src/main/resources/conf"});
     }
 }
