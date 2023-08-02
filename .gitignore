@@ -34,8 +34,7 @@ build/
 /.gradle
 !/*/*/out
 /*/out
-#!/*/*/build
-/*/*/build
+!/*/*/build
 /*/build
 !/*/*/bin
 /*/bin
