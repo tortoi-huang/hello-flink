@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class Graph {
     public static void main(String[] args) throws Exception {
+
+        //StreamExecutionEnvironment和ExecutionEnvironment中有三个线程变量是从submit时传过来的: executorServiceLoader/configuration/userCodeClassLoader
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         //StreamExecutionEnvironment env = StreamExecutionEnvironment.createRemoteEnvironment("127.0.0.1",8081, "D:\\study\\flink\\hello-flink\\graph\\build\\libs\\graph-1.0.0-SNAPSHOT.jar");
 
