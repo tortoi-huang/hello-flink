@@ -6,6 +6,7 @@ dependencies {
     implementation "org.apache.flink:flink-java:${flinkVersion}"
     implementation "org.apache.flink:flink-streaming-java:${flinkVersion}"
     implementation "org.apache.flink:flink-clients:${flinkVersion}"
+    implementation project(":common")
 }
 
 jar {

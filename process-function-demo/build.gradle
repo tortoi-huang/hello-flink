@@ -1,5 +1,5 @@
 ext{
-    flinkVersion = "1.17.0"
+    flinkVersion = "1.17.1"
     sparkVersion = "2.12"
 }
 dependencies {

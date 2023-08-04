@@ -1,0 +1,6 @@
+ext{
+    flinkVersion = "1.17.1"
+}
+dependencies {
+    implementation "org.apache.flink:flink-core:${flinkVersion}"
+}

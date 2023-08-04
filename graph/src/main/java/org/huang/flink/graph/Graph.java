@@ -94,9 +94,10 @@ public class Graph {
             System.out.println("------ 顶点信息 task Vertic: " + e);
         });
 
+        System.out.println(env.getExecutionPlan());
         System.out.println("--------------------------------------- execute ---------------------------------------");
-        JobExecutionResult flinkGraph = env.execute("flink graph");
-        System.out.println("-- JobExecutionResult: " + flinkGraph);
+        JobExecutionResult executionResult = env.execute("flink graph");
+        System.out.println("-- JobExecutionResult: " + executionResult);
 
         //ExecutionEnvironment env2 = ExecutionEnvironment.getExecutionEnvironment();
     }
