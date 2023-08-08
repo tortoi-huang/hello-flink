@@ -15,5 +15,6 @@ include 'connetct'
 //include 'entrypoint'
 include 'entrypoint:session'
 include 'entrypoint:appdemo'
+include 'entrypoint:commons'
 include 'common'
 

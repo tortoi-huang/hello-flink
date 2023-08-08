@@ -1,0 +1,13 @@
+// 以下插件打包并生成启动脚本bat和sh
+//apply plugin: 'application'
+
+ext{
+    flinkVersion = "1.17.1"
+}
+
+dependencies {
+    implementation "org.apache.flink:flink-core:${flinkVersion}"
+    implementation "org.apache.flink:flink-java:${flinkVersion}"
+    implementation "org.apache.flink:flink-streaming-java:${flinkVersion}"
+    implementation "org.apache.flink:flink-clients:${flinkVersion}"
+}

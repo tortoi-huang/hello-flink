@@ -1,20 +1,18 @@
 package org.huang.flink.graph;
 
 import org.apache.flink.api.common.JobExecutionResult;
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.client.deployment.executors.PipelineExecutorUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.runtime.jobgraph.JobGraph;
 import org.apache.flink.streaming.api.datastream.*;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.sink.SinkFunction;
-import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.api.graph.StreamGraph;
 import org.apache.flink.streaming.api.graph.StreamNode;
 import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.huang.flink.common.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -34,17 +32,12 @@ public class Graph {
         System.out.println();
 
         //往StreamExecutionEnvironment.transformations添加一个元素
-        SingleOutputStreamOperator<Tuple2<String, Integer>> mapped = source.map(new MapFunction<String, Tuple2<String, Integer>>() {
-            @Override
-            public Tuple2<String, Integer> map(String e) throws Exception {
-                return Tuple2.of(e, 1);
-            }
-        }).name("FG mapped");
+        SingleOutputStreamOperator<Tuple2<String, Integer>> mapped = source.map(new StringAndOneTuple2Map()).name("FG mapped");
         System.out.println("-- stream transformation, mapped: " + mapped.getTransformation());
         System.out.println("-- env transformations, mapped: " + env.getTransformations());
         System.out.println();
 
-        KeyedStream<Tuple2<String, Integer>, String> keyed = mapped.keyBy(e -> e.f0);
+        KeyedStream<Tuple2<String, Integer>, String> keyed = mapped.keyBy(new Tuple2Feild1KeySelector<>());
         System.out.println("-- stream transformation, keyed: " + keyed.getTransformation());
         System.out.println("-- env transformations, keyed: " + env.getTransformations());
         System.out.println();
@@ -56,17 +49,12 @@ public class Graph {
         System.out.println();
 
         SingleOutputStreamOperator<Tuple2<String, Integer>> reduced =
-                window.reduce((k1, k2) -> Tuple2.of(k1.f0, k1.f1 + k2.f1)).name("FG reduced");
+                window.reduce(new SumTuple2F1ReduceFunction()).name("FG reduced");
         System.out.println("-- stream transformation, reduced: " + reduced.getTransformation());
         System.out.println("-- env transformations, reduce: " + env.getTransformations());
         System.out.println();
 
-        DataStreamSink<Tuple2<String, Integer>> printed = reduced.addSink(new SinkFunction<Tuple2<String, Integer>>() {
-            @Override
-            public void invoke(Tuple2<String, Integer> value, Context context) throws Exception {
-                System.out.println("Sink: " + value);
-            }
-        }).name("FG printed");
+        DataStreamSink<Tuple2<String, Integer>> printed = reduced.addSink(new SystemOutSinkFunction<>()).name("FG printed");
         System.out.println("-- stream transformation, printed: " + printed.getTransformation());
         System.out.println("-- env transformations, print: " + env.getTransformations());
         System.out.println();
@@ -100,39 +88,5 @@ public class Graph {
         System.out.println("-- JobExecutionResult: " + executionResult);
 
         //ExecutionEnvironment env2 = ExecutionEnvironment.getExecutionEnvironment();
-    }
-
-    static class FlinkGraphSource implements SourceFunction<String> {
-        volatile private static boolean canceled = false;
-
-        @Override
-        public void run(SourceContext<String> ctx) throws Exception {
-            //while(!canceled) {
-            ctx.collectWithTimestamp("hello", 1000);
-            ctx.collectWithTimestamp("flink", 2000);
-            ctx.collectWithTimestamp(",", 2000);
-            ctx.collectWithTimestamp("I", 3000);
-            ctx.collectWithTimestamp("like", 4000);
-            ctx.collectWithTimestamp("flink", 5000);
-            ctx.collectWithTimestamp(",", 6000);
-            ctx.collectWithTimestamp("flink", 7000);
-            ctx.collectWithTimestamp("is", 8000);
-            ctx.collectWithTimestamp("the", 9000);
-            ctx.collectWithTimestamp("best", 10000);
-            ctx.collectWithTimestamp("steam", 11000);
-            ctx.collectWithTimestamp("compute", 12000);
-            ctx.collectWithTimestamp("framework", 13000);
-            ctx.collectWithTimestamp(".", 14000);
-
-            System.out.println("-- FlinkGraphSource sent data");
-            Thread.sleep(20000);
-            ctx.collectWithTimestamp("message end", 34000);
-            //}
-        }
-
-        @Override
-        public void cancel() {
-            canceled = true;
-        }
     }
 }
