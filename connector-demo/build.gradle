@@ -1,4 +1,4 @@
-ext{
+/*ext{
     flinkVersion = "1.8.1"
     sparkVersion = "2.12"
 }
@@ -9,4 +9,4 @@ dependencies {
     implementation "org.apache.flink:flink-clients_${sparkVersion}:${flinkVersion}"
     implementation "org.apache.flink:flink-table-api-java:${flinkVersion}"
     implementation "org.apache.flink:flink-table-planner_${sparkVersion}:${flinkVersion}"
-}
+}*/

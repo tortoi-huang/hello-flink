@@ -1,20 +1,17 @@
 package org.huang.flink.hello;
 
-import org.apache.flink.api.java.tuple.Tuple;
+import org.apache.flink.api.common.eventtime.*;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
-import org.apache.flink.streaming.api.watermark.Watermark;
+import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -29,12 +26,11 @@ public class WaterMark2 {
 
 		try {
 			final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-			env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 			DataStream<Tuple3<String, Long,String>> text = env.addSource(new MySourceFunction())
 					.assignTimestampsAndWatermarks(new TimestampExtractor())
 					;
-			text.keyBy(0)
-					.timeWindow(Time.seconds(10), Time.seconds(5))
+			text.keyBy(e -> e.f0)
+					.window(SlidingEventTimeWindows.of(Time.seconds(10), Time.seconds(5)))
 					.process(new MySum())
 					.print();
 
@@ -45,19 +41,19 @@ public class WaterMark2 {
 		}
 	}
 
-	private static class MySum extends ProcessWindowFunction<Tuple3<String, Long,String>, Tuple2<String, Long>, Tuple, TimeWindow> {
+	private static class MySum extends ProcessWindowFunction<Tuple3<String, Long,String>, Tuple2<String, Long>, String, TimeWindow> {
 		@Override
-		public void process(Tuple tuple, Context context, Iterable<Tuple3<String, Long,String>> elements,
+		public void process(String key, Context context, Iterable<Tuple3<String, Long,String>> elements,
 				Collector<Tuple2<String, Long>> out) {
 			long count = 0;
-			String key = tuple.getField(0) + ",";
+			String newKey = key + ",";
 			for(Tuple3<String, Long,String> e : elements) {
-				key = key + e.f2 + ",";
+				newKey = newKey + e.f2 + ",";
 				count ++;
 			}
 			Tuple2<Long, Long> wd = Tuple2.of(rebaseTime(context.window().getStart()), rebaseTime(context.window().getEnd()));
-			key = key + wd + ", currentWatermark:" + rebaseTime(context.currentWatermark()) + ",currentProcessingTime" + rebaseTime(context.currentProcessingTime());
-			out.collect(Tuple2.of(key,count));
+			newKey = newKey + wd + ", currentWatermark:" + rebaseTime(context.currentWatermark()) + ",currentProcessingTime" + rebaseTime(context.currentProcessingTime());
+			out.collect(Tuple2.of(newKey,count));
 		}
 	}
 
@@ -127,17 +123,28 @@ public class WaterMark2 {
 		}
 	}
 
-	static class TimestampExtractor implements AssignerWithPeriodicWatermarks<Tuple3<String, Long,String>> {
-		@Nullable
+	static class TimestampExtractor implements WatermarkStrategy<Tuple3<String, Long,String>> {
 		@Override
-		public Watermark getCurrentWatermark() {
-			long waterTimes = System.currentTimeMillis() - 5000;
-			return new Watermark(waterTimes);
+		public WatermarkGenerator<Tuple3<String, Long, String>> createWatermarkGenerator(WatermarkGeneratorSupplier.Context context) {
+			return new WatermarkGenerator<Tuple3<String, Long, String>>() {
+				private long time = 0;
+
+				@Override
+				public void onEvent(Tuple3<String, Long, String> event, long eventTimestamp, WatermarkOutput output) {
+					time = event.f1 > time ? event.f1 : time;
+				}
+
+				@Override
+				public void onPeriodicEmit(WatermarkOutput output) {
+					long wt = time - 5000;
+					output.emitWatermark(new Watermark(wt));
+				}
+			};
 		}
 
 		@Override
-		public long extractTimestamp(Tuple3<String, Long,String> element, long previousElementTimestamp) {
-			return element.f1;
+		public TimestampAssigner<Tuple3<String, Long, String>> createTimestampAssigner(TimestampAssignerSupplier.Context context) {
+			return (e,t) -> e.f1;
 		}
 	}
 }

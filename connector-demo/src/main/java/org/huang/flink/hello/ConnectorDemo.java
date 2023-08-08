@@ -1,19 +1,11 @@
 package org.huang.flink.hello;
 
-import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.table.api.java.BatchTableEnvironment;
-import org.apache.flink.table.descriptors.FileSystem;
-import org.apache.flink.table.descriptors.OldCsv;
-import org.apache.flink.table.descriptors.Schema;
-import org.apache.flink.table.sinks.CsvTableSink;
-
 public class ConnectorDemo {
 	static String file1 = "E:\\project\\study\\huang-lab\\python\\webdb\\export_by_ids\\export_by_ids3_1.csv";
-	static TypeInformation stringType = TypeInformation.of(String.class);
+	//static TypeInformation stringType = TypeInformation.of(String.class);
 
 	public static void main(String[] args) throws Exception {
-		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+		/*final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 		BatchTableEnvironment environment = BatchTableEnvironment.create(env);
 
 		final OldCsv csv = new OldCsv().field("order_no", stringType).field("cust_order_no", stringType)
@@ -42,6 +34,6 @@ public class ConnectorDemo {
 
 		env.execute();
 
-		System.out.println("excute time:" + (System.nanoTime() - start) / 1_000_000);
+		System.out.println("excute time:" + (System.nanoTime() - start) / 1_000_000);*/
 	}
 }

@@ -1,9 +1,11 @@
 package org.huang.flink.hello;
 
+import org.apache.flink.api.common.eventtime.*;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
@@ -42,7 +44,27 @@ public class SocketWindowWordCount {
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
 		// get input data by connecting to the socket
-		DataStream<String> text = env.socketTextStream(hostname, port, "\n");
+		DataStream<String> text = env.socketTextStream(hostname, port, "\n").assignTimestampsAndWatermarks(new WatermarkStrategy<String>() {
+			@Override
+			public WatermarkGenerator<String> createWatermarkGenerator(WatermarkGeneratorSupplier.Context context) {
+				return new WatermarkGenerator<String>() {
+					@Override
+					public void onEvent(String event, long eventTimestamp, WatermarkOutput output) {
+
+					}
+
+					@Override
+					public void onPeriodicEmit(WatermarkOutput output) {
+						output.emitWatermark(new Watermark(System.currentTimeMillis()));
+					}
+				};
+			}
+
+			@Override
+			public TimestampAssigner<String> createTimestampAssigner(TimestampAssignerSupplier.Context context) {
+				return (e,t) -> System.currentTimeMillis();
+			}
+		});
 
 		// parse the data, group it, window it, and aggregate the counts
 		DataStream<WordWithCount> windowCounts = text
@@ -54,8 +76,8 @@ public class SocketWindowWordCount {
 					}
 				}).returns(WordWithCount.class)
 
-				.keyBy("word")
-				.timeWindow(Time.seconds(5))
+				.keyBy(e -> e.word)
+				.window(SlidingEventTimeWindows.of(Time.seconds(5), Time.seconds(5)))
 
 				.reduce((a, b) -> new WordWithCount(a.word, a.count + b.count));
 

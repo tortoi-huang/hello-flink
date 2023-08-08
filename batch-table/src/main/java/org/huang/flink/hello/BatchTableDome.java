@@ -1,45 +1,50 @@
 package org.huang.flink.hello;
 
 import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.core.fs.FileSystem;
-import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.java.BatchTableEnvironment;
-import org.apache.flink.table.sinks.CsvTableSink;
-import org.apache.flink.table.sinks.TableSink;
-import org.apache.flink.table.sources.CsvTableSource;
-import org.apache.flink.types.Row;
+import org.apache.flink.table.api.EnvironmentSettings;
+import org.apache.flink.table.api.TableEnvironment;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class BatchTableDome {
-	static String file1 = "E:\\project\\study\\huang-lab\\python\\webdb\\export_by_ids\\export_by_ids3_1.csv";
-	static TypeInformation stringType = TypeInformation.of(String.class);
-	public static void main(String[] args) throws Exception {
+    static final String SOURCE_FILE = "batch-table/build/resources/main/source/exeample.csv";
+    static final String SINK_FILE = "batch-table/build/resources/main/sink/";
+    static TypeInformation stringType = TypeInformation.of(String.class);
 
-		// set up the execution environment
-		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+    public static void main(String[] args) throws Exception {
 
-		final CsvTableSource.Builder builder = new CsvTableSource.Builder();
-		builder.path(file1)
-				.field("order_no",stringType)
-				.field("cust_order_no",stringType)
-				.field("status",TypeInformation.of(Byte.class))
-				.field("time1",stringType);
-		BatchTableEnvironment environment = BatchTableEnvironment.create(env);
-		environment.registerTableSource("orders",builder.build());
+        File sourceFile = new File(SOURCE_FILE);
+        if (!sourceFile.exists()) {
+            throw new FileNotFoundException("File not found:" + sourceFile.getAbsolutePath());
+        }
+        File sinkFile = new File(SINK_FILE);
 
-		CsvTableSink sink = new CsvTableSink("E:\\project\\tmp\\output\\flink_sql.csv",",",1, FileSystem.WriteMode.OVERWRITE);
-		final TableSink<Row> configure = sink.configure(new String[] { "status", "count_od" },
-				new TypeInformation[] { TypeInformation.of(Byte.class), TypeInformation.of(Long.class) });
-		environment.registerTableSink("order_group",configure);
-		final long start = System.nanoTime();
-		final Table table = environment.sqlQuery("select status,count(1) from orders group by status order by status");
+        EnvironmentSettings settings = EnvironmentSettings
+                .newInstance()
+                //.inStreamingMode()//使用流模式则所有的查询只能根据时间戳排序
+                .inBatchMode()
+                .build();
+        TableEnvironment environment = TableEnvironment.create(settings);
 
-		System.out.println(environment.explain(table));
+        environment.executeSql("create table orders (" +
+                "order_no STRING, cust_order_no STRING, status TINYINT, time1 TIMESTAMP) " +
+                "with (" +
+                "'connector' = 'filesystem'," +
+                "'format' = 'csv'," +
+                "'path' = 'file:///" + sourceFile.getAbsolutePath() + "'" +
+                ")");
 
-		table.insertInto("order_group");
-		//environment.toDataSet(table, Row.class).print();
-		env.execute();
+        environment.executeSql("create table status_count (" +
+                "status TINYINT,CNT BIGINT) " +
+                "with (" +
+                "'connector' = 'filesystem'," +
+                "'format' = 'csv'," +
+                "'path' = 'file:///" + sinkFile.getAbsolutePath() + "'" +
+                ")");
 
-		System.out.println("excute time:" + (System.nanoTime() - start) / 1_000_000);
-	}
+        environment
+                .executeSql("insert into status_count select status,count(1) cnt from orders group by status order by status")
+                .print();
+    }
 }

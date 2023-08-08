@@ -1,3 +1,4 @@
+/*
 ext{
     flinkVersion = "1.8.1"
     sparkVersion = "2.12"
@@ -8,6 +9,7 @@ dependencies {
     implementation "org.apache.flink:flink-scala_${sparkVersion}:${flinkVersion}"
     implementation "org.apache.flink:flink-clients_${sparkVersion}:${flinkVersion}"
     implementation "org.apache.flink:flink-streaming-java_${sparkVersion}:${flinkVersion}"
-    api 'mysql:mysql-connector-java:8.0.15'
+    api 'mysql:mysql-connector-java:8.0.28'
     implementation "org.apache.flink:flink-jdbc_${sparkVersion}:${flinkVersion}"
 }
+*/
