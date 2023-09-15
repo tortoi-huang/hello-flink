@@ -80,7 +80,7 @@ public class Graph3 {
         final Collection<JobSubmitRequestBody.DistributedCacheFile> artifactFileNames = Collections.emptyList();
         JobSubmitRequestBody body = new JobSubmitRequestBody(jobGraphFileName, jarFileNames, artifactFileNames);
 
-        //sendHttpRequest(body,jobGraphBytes,Collections.emptyList());
+        sendHttpRequest(body,jobGraphBytes,Collections.emptyList());
         //env.execute("simple stream without jar");
     }
 

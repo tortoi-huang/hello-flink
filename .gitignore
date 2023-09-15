@@ -38,5 +38,6 @@ build/
 /*/build
 !/*/*/bin
 /*/bin
-entrypoint/appdemo/build
-entrypoint/session/build
+*/build
+entrypoint/*/build
+watermark/*/build
