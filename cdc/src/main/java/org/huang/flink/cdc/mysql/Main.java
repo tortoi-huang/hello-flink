@@ -3,6 +3,7 @@ import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.configuration.CheckpointingOptions;
 import org.apache.flink.configuration.ConfigOptions;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.StateBackendOptions;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema;
 import com.ververica.cdc.connectors.mysql.source.MySqlSource;
@@ -24,15 +25,17 @@ public class Main {
                 .scanNewlyAddedTableEnabled(true) //新增表也支持同步
                 .build();
 
+        //每次重启总是会读取数据库快照，怎么设置都没用
         Configuration configuration = new Configuration();
-        //configuration.set(CheckpointingOptions.CHECKPOINTS_DIRECTORY, "file:///D:/tmp/fl-checkpoint");
+        configuration.set(StateBackendOptions.STATE_BACKEND, "filesystem");
+        configuration.set(CheckpointingOptions.CHECKPOINTS_DIRECTORY, "file:///D:/tmp/fl-checkpoint");
         configuration.set(CheckpointingOptions.SAVEPOINT_DIRECTORY, "file:///D:/tmp/fl-savepoint");
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(configuration);
 
         // enable checkpoint
         env.enableCheckpointing(3000);
-        env.getCheckpointConfig().setCheckpointStorage("file:///D:/tmp/fl-checkpoint");
+        //env.getCheckpointConfig().setCheckpointStorage("file:///D:/tmp/fl-checkpoint");
 
         env
                 .fromSource(mySqlSource, WatermarkStrategy.noWatermarks(), "MySQL Source")
