@@ -1,5 +1,9 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+apply plugin: 'com.gradleup.shadow'
+
 ext{
-    flinkVersion = "1.17.1"
+    flinkVersion = "1.20.0"
 }
 /*configurations {
     runtime.exclude group "com.fasterxml.jackson.core" model "jackson-databind"
@@ -19,7 +23,9 @@ dependencies {
         exclude group: "junit", module: "junit"
     }
     implementation "org.apache.logging.log4j:log4j-slf4j-impl:2.17.1"
-    implementation ("com.ververica:flink-connector-mysql-cdc:2.4.1") {
+    // https://mvnrepository.com/artifact/org.apache.flink/flink-shaded-guava
+    // implementation 'org.apache.flink:flink-shaded-guava:31.1-jre-17.0'
+    implementation ("com.ververica:flink-connector-mysql-cdc:3.0.1") {
         exclude group: "com.fasterxml.jackson.core", module: "jackson-databind"
         //exclude group: "org.apache.kafka", module: "kafka-clients"
     }
@@ -28,14 +34,33 @@ dependencies {
     testImplementation "junit:junit:4.13.1"
 }
 
-/*
+tasks.named('shadowJar', ShadowJar) {
+//    minimize()
+    dependencies {
+//        exclude(dependency('org.apache.flink:.*'))
+        include(dependency('com.ververica:.*'))
+        include(dependency('io.debezium:.*'))
+        include(dependency('mysql:.*'))
+        include(dependency('com.zendesk:.*'))
+        include(dependency('com.zaxxer:.*'))
+        include(dependency('com.esri.geometry:.*'))
+//        include(dependency('org.apache.flink:flink-shaded-guava:.*'))
+        include(dependency('org.apache.kafka:.*'))
+        include(dependency('org.antlr:.*'))
+        include(dependency('com.fasterxml.jackson.core:.*'))
+        exclude 'log4j2.properties'
+        exclude 'logback.xml'
+    }
+}
+
 jar {
     manifest {
         attributes 'Main-Class': 'org.huang.flink.cdc.mysql.Main'
         //attributes 'program-class': 'org.huang.flink.cdc.mysql.Main'
     }
-}*/
-task fatJar(type: Jar) {
+}
+/*
+tasks.register('fatJar', Jar) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes 'Main-Class': 'org.huang.flink.cdc.mysql.Main'
@@ -46,4 +71,4 @@ task fatJar(type: Jar) {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     with jar
-}
+}*/

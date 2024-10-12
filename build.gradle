@@ -1,7 +1,16 @@
-/*plugins {
+
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'com.gradleup.shadow:shadow-gradle-plugin:8.3.3'
+    }
+}
+plugins {
+    id 'com.gradleup.shadow' version '8.3.3'
     id 'java'
-    id 'java-library'
-}*/
+}
 
 allprojects {
     tasks.withType(JavaCompile).configureEach {

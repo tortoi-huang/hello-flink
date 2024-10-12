@@ -41,3 +41,6 @@ build/
 */build
 entrypoint/*/build
 watermark/*/build
+
+cdc/docker/data/jobmanager/fl-checkpoint
+cdc/docker/data/taskmanager1

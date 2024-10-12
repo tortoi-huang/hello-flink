@@ -1,0 +1,59 @@
+blob:
+  server:
+    port: '6124'
+fs:
+  allowed-fallback-filesystems: s3
+jobmanager:
+  execution:
+    failover-strategy: region
+  rpc:
+    address: jobMgr
+    port: 6123
+  bind-host: 0.0.0.0
+  memory:
+    process:
+      size: 768m
+taskmanager:
+  memory:
+    jvm-metaspace:
+      size: 128m
+    jvm-overhead:
+      min: 128m
+    flink:
+      size: 512m
+    process:
+      size: 768m
+    managed:
+      size: 192m
+  numberOfTaskSlots: '4'
+  bind-host: 0.0.0.0
+query:
+  server:
+    port: '6125'
+s3:
+  secret-key: MJdMWfCQnMk9cYex43WaJtXKVzupXfU2VnjjpNOe
+  endpoint: minio:9000
+  ssl:
+    enabled: false
+  access-key: o4dCEAoZ776kFGh7QcbZ
+  path:
+    style:
+      access: true
+execution:
+  checkpointing:
+    savepoint-dir: file:///data/savepoints
+    storage: filesystem
+    dir: file:///data/checkpoints
+parallelism:
+  default: 4
+env:
+  java:
+    opts:
+      all: --add-exports=java.base/sun.net.util=ALL-UNNAMED --add-exports=java.rmi/sun.rmi.registry=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-exports=java.security.jgss/sun.security.krb5=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.base/java.time=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED
+state:
+  backend:
+    type: rocksdb
+rest:
+  bind-address: 0.0.0.0
+  port: 8081
+  address: 0.0.0.0

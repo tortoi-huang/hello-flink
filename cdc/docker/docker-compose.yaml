@@ -1,0 +1,83 @@
+version: "3.8"
+services:
+  mariadb:
+    container_name: mysql1
+    hostname: mariadb
+    image: mariadb:11.6.1-rc
+    command:
+      - --log-bin
+      - --binlog-format=ROW
+      - --plugin-load-add=simple_password_check
+    environment:
+      MARIADB_ROOT_PASSWORD: Mypass@112233
+      MARIADB_DATABASE: test
+    # 默认数据目录 /var/lib/mysql
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      # 不建议直接修改 /etc/mysql/my.cnf
+      # - ./my.cnf:/etc/mysql/conf.d/custom.cnf:ro
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  jobmanager:
+    container_name: jobMgr
+    hostname: jobmanager
+    image: flink:1.20.0-java17
+    command:
+#      - jobmanager
+      - standalone-job
+      - --job-classname org.huang.flink.cdc.mysql.Main
+      - --job-id b7a2c8ba2d80390c4ee5e288fe93a994
+    environment:
+      MARIADB_HOST: mariadb
+      MARIADB_PORT: 3306
+      MARIADB_USER: root
+      MARIADB_PASSWORD: Mypass@112233
+      MARIADB_DATABASE: test
+      STATE_DIR: /data
+      FLINK_PROPERTIES: |-
+        jobmanager.rpc.address: jobmanager
+        parallelism.default: 2
+      ROOT_LOG_LEVEL: WARN
+    volumes:
+      - ../build/libs/cdc-1.0.0-SNAPSHOT-all.jar:/opt/flink/lib/job.jar:ro
+      - ./data/jobmanager:/data
+    ports:
+      - "8081:8081"
+    healthcheck:
+      test:
+        - "CMD"
+        - "curl"
+        - "localhost:8081"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+  taskmanager:
+    container_name: taskMgr1
+    hostname: taskMgr1
+    image: flink:1.20.0-java17
+    command:
+      - taskmanager
+    environment:
+      FLINK_PROPERTIES: |-
+        jobmanager.rpc.address: jobmanager
+        parallelism.default: 4
+        taskmanager.numberOfTaskSlots: 4
+      ROOT_LOG_LEVEL: WARN
+    volumes:
+      - ../build/libs/cdc-1.0.0-SNAPSHOT-all.jar:/opt/flink/lib/job.jar:ro
+      - ./data/taskmanager1:/data
+    depends_on:
+      jobmanager:
+        condition: service_healthy
+
+volumes:
+  mariadb_data:
+    driver: local
