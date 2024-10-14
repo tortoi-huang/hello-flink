@@ -1,6 +1,11 @@
 # hello-flink
 读取 mysql binlog   
 运行gradle 任务 shadowJar 打包关联 jar
+```shell
+# ./gradlew :common:package :cdc:shadowJar
+# .\gradlew.bat :cdc:clean :cdc:shadowJar
+./gradlew :cdc:clean :cdc:shadowJar
+```
 ## 启动 mysql
 ```shell
 # 启动数据库
@@ -28,4 +33,4 @@ sudo docker exec -it mysql1 mariadb -uroot -pMypass@112233 test -e "update perso
 ## 总结
 + 每次重新部署任job时会给任务生成一个随机的 job id, 可以通过configuration.set(PipelineOptionsInternal.PIPELINE_FIXED_JOB_ID,"b7a2c8ba2d80390c4ee5e288fe93a994") 来指定id 
 + 每次 jobmanager 重启需要指定fink checkpoint, 官方没有自动使用上次checkpoint的实现, 哪怕job id一样要指定 
-
++ gradle shadow 插件可以打包 fat jar, 默认会打包所有依赖. 使用 include 指令后则只打包 使用 include 的依赖, 并不打包依赖的依赖, 需要逐个找出依赖树
